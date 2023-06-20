@@ -31,3 +31,5 @@ Fetch and tabulate summary data from recent turnovers.
 └──────────────────────────┴────────────────┴──────────────────┴────────┴────────────┘
 
 ```
+
+Uses a Turno session cookie, since not all this data is available via the API.
