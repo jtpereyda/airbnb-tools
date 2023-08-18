@@ -11,7 +11,9 @@ function format_date(date) {
 async function fetchAndPrintJSON() {
     let turnoverbnb_session1 = process.env.TURNO_SESSION;
 
-    let end = format_date(new Date());
+    let end = new Date();
+    end.setDate(end.getDate() + 1);
+    end = format_date(end);
     let start = new Date();
     start.setDate(start.getDate() - 30);
     start = format_date(start);
