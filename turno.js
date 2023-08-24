@@ -35,23 +35,26 @@ async function fetchAndPrintJSON() {
     let projects = j.projects;
 
     let rows = []
-    // for project in projects
-    for (let project of projects) {
-        r = await fetch(`https://app.turno.com/projects/list-details/${project.id}?fromCalendar=true`, {
-        headers: {
-            'cookie': ` turnoverbnb_session1=${turnoverbnb_session1}`
-        }
+
+    let promises = projects.map(async project => {
+        const r = await fetch(`https://app.turno.com/projects/list-details/${project.id}?fromCalendar=true`, {
+            headers: {
+                'cookie': ` turnoverbnb_session1=${turnoverbnb_session1}`
+            }
         });
         
-        j = await r.json();
+        const j = await r.json();
         let notes = j.project.notes;
         let name = j.project.cleaner_name;
         let date = format_date(new Date(j.project.date));
         let address = j.project.property.alias;
         let status = project.completed ? "X" : "";
         let checklist = j.project.itemsDone + "/" + j.project.checklist_items_count;
-        rows.push({"Date": date, "Name": name, "Location": address, "Status": status, "Checklist": checklist, "Notes": notes});
-    }
+        
+        return {"Date": date, "Name": name, "Location": address, "Status": status, "Checklist": checklist, "Notes": notes};
+    });
+    
+    rows = await Promise.all(promises);
 
     // print rows in a human readable table
     // for (let row of rows) {
