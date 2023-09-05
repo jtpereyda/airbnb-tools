@@ -1,6 +1,7 @@
 // import node-fetch using import instead of require
 import fetch from 'node-fetch';
-import { printTable, Table } from 'console-table-printer';
+import { table } from 'table';
+import chalk from 'chalk';
 
 // Call API in a for loop
 
@@ -56,16 +57,39 @@ async function fetchAndPrintJSON() {
     
     rows = await Promise.all(promises);
 
-    // print rows in a human readable table
-    // for (let row of rows) {
-    //     console.log(row.join("\t"));
-    // }
-    const p = new Table();
+    // // print rows in a human readable table
+    // // for (let row of rows) {
+    // //     console.log(row.join("\t"));
+    // // }
+    // const p = new Table({head: ["Date", "Name", "Location", "Status", "Checklist", "Notes"]});
 
-    for (let row of rows) {
-        p.addRow(row, {color: row.Notes ? "green" : "red"});
-    }
-    p.printTable();
+    // for (let row of rows) {
+    //     // p.push(row, {color: row.Notes ? "green" : "red"});
+    //     p.push(row);
+    // }
+
+    // For each row in rows, if Notes is empty, color the cell red
+    rows = rows.map(row => {
+        if (row.Notes) {
+            return row;
+        } else {
+            // use a color library to make this console text red
+            row.Notes = chalk.italic(chalk.red("No notes"));
+            return row;
+        }
+    });
+
+    
+    // convert rows to an array of arrays
+    rows = rows.map(row => Object.values(row));
+
+    const config = {
+        drawHorizontalLine: (lineIndex, rowCount) => {
+          return lineIndex === 0 || lineIndex === 1 || lineIndex === rowCount;
+        }
+    };
+
+    console.log(table(rows, config));
 
 }
 
